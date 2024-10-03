@@ -8,9 +8,9 @@ import { sleep } from "@utils/misc";
 import { ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot } from "@utils/modal";
 import { Alerts, Button, Forms, React, TextInput } from "@webpack/common";
 
-import { settingsStoreType } from "./settings";
+import { settings } from ".";
 
-const letterToUrlEncodedMap: Record<string, string> = {
+const characterToUrlEncodedMap: Record<string, string> = {
     "A": "%F0%9F%87%A6",
     "B": "%F0%9F%87%A7",
     "C": "%F0%9F%87%A8",
@@ -37,27 +37,38 @@ const letterToUrlEncodedMap: Record<string, string> = {
     "X": "%F0%9F%87%BD",
     "Y": "%F0%9F%87%BE",
     "Z": "%F0%9F%87%BF",
+    "0": "0%EF%B8%8F%E2%83%A3",
+    "1": "1%EF%B8%8F%E2%83%A3",
+    "2": "2%EF%B8%8F%E2%83%A3",
+    "3": "3%EF%B8%8F%E2%83%A3",
+    "4": "4%EF%B8%8F%E2%83%A3",
+    "5": "5%EF%B8%8F%E2%83%A3",
+    "6": "6%EF%B8%8F%E2%83%A3",
+    "7": "7%EF%B8%8F%E2%83%A3",
+    "8": "8%EF%B8%8F%E2%83%A3",
+    "9": "9%EF%B8%8F%E2%83%A3",
+    "?": "%E2%9D%94",
+    "!": "%E2%9D%95"
 };
 
-export function Modal({ props, message, settingsStore }: { props: ModalProps; message: { channel_id: string, id: string; }; settingsStore: settingsStoreType; }) {
+export function Modal({ props, message }: { props: ModalProps; message: { channel_id: string, id: string; }; }) {
     const [value, setValue] = React.useState<string>("");
     async function onConfirm() {
         const trimmedValue = value.trim();
-        if (spaceRegex.test(trimmedValue)) {
+        if (/\s+/.test(trimmedValue)) {
             Alerts.show({ title: "No spaces allowed!", "body": "Please remove all spaces from the text!" });
         } else {
             props.onClose();
             for (const letter of trimmedValue) {
-                fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${letterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "put", headers: { Authorization: settingsStore.userToken! } });
-                await sleep(settingsStore.delayBetweenLetters || 400);
+                fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${characterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "PUT", headers: { Authorization: settings.store.userToken! } });
+                await sleep(settings.store.delayBetweenLetters || 400);
             }
         }
     }
-    const spaceRegex = /\s+/;
     return (
         <ModalRoot {...props}>
             <ModalHeader>
-                <Forms.FormTitle tag="h4">Text to Message Reaction</Forms.FormTitle>
+                <Forms.FormTitle tag="h4">React with Text</Forms.FormTitle>
             </ModalHeader>
             <ModalContent>
                 <TextInput
