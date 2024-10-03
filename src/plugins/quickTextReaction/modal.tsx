@@ -60,7 +60,7 @@ export function Modal({ props, message }: { props: ModalProps; message: { channe
         } else {
             props.onClose();
             for (const letter of trimmedValue) {
-                fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${characterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "PUT", headers: { Authorization: settings.store.userToken! } });
+                await fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${characterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "PUT", headers: { Authorization: settings.store.userToken! } });
                 await sleep(settings.store.delayBetweenLetters || 400);
             }
         }
