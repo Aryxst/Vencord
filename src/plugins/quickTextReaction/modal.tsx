@@ -53,18 +53,27 @@ const characterToUrlEncodedMap: Record<string, string> = {
 
 export function Modal({ props, message }: { props: ModalProps; message: { channel_id: string, id: string; }; }) {
     const [value, setValue] = React.useState<string>("");
+
     async function onConfirm() {
         const trimmedValue = value.trim();
+
         if (/\s+/.test(trimmedValue)) {
             Alerts.show({ title: "No spaces allowed!", "body": "Please remove all spaces from the text!" });
         } else {
             props.onClose();
+            let progress = "";
+
             for (const letter of trimmedValue) {
-                await fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${characterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "PUT", headers: { Authorization: settings.store.userToken! } });
-                await sleep(settings.store.delayBetweenLetters || 400);
+                if (!progress.includes(letter)) {
+                    progress += letter;
+
+                    await fetch(`https://discord.com/api/v9/channels/${message.channel_id}/messages/${message.id}/reactions/${characterToUrlEncodedMap[letter.toUpperCase()]}/%40me?location=Message%20Hover%20Bar&type=0`, { method: "PUT", headers: { Authorization: settings.store.userToken! } });
+                    await sleep(settings.store.delayBetweenLetters || 400);
+                }
             }
         }
     }
+
     return (
         <ModalRoot {...props}>
             <ModalHeader>
