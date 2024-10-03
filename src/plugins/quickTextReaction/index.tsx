@@ -15,7 +15,7 @@ import { Modal } from "./modal";
 import { settings } from "./settings";
 
 export default definePlugin({
-    name: "quickTextReaction",
+    name: "QuickTextReaction",
     description: "Quickly react to messages with letters emoji",
     authors: [Devs.Aryxst],
     settings,
